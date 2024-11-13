@@ -10,6 +10,8 @@ public class TicTacToe
     public static void main(String[] args) {
         Scanner in = new Scanner(System.in);
         boolean done = false;
+        boolean tie = false;
+        boolean valid = false;
         int moveCnt = 0;
         int rowMove = 0;
         int colMove = 0;
@@ -18,25 +20,39 @@ public class TicTacToe
         do {
             clearBoard();
             player = "X";
+            moveCnt = 0;
 
-            for (int i = 0; i < 9; i++)
-            {
-                rowMove=SafeInput.getRangedInt(in,"Choose the ROW you wish to use, " + player + "!",1,3);
+            do {
+                do {
+                rowMove = SafeInput.getRangedInt(in, "Choose the ROW you wish to use, " + player + "!", 1, 3);
                 rowMove--;
-                colMove=SafeInput.getRangedInt(in,"Choose the COL you wish to use, " + player + "!",1,3);
+                colMove = SafeInput.getRangedInt(in, "Choose the COL you wish to use, " + player + "!", 1, 3);
                 colMove--;
-                if(isValidMove(rowMove,colMove))
-                    board[rowMove][colMove]=player;
-                else
-                    System.out.println("invalid move, please pick another area");
-                display();
-                if(isWin(player)) {
-                    System.out.println(player + " wins!");
-                    break;
+
+                    if (isValidMove(rowMove, colMove)) {
+                        board[rowMove][colMove] = player;
+                        moveCnt++;
+                        valid = true;
                     }
-                player=playerSwap(player);
-            }
-            System.out.println("Board full, It's a Tie!");
+                    else
+                        System.out.println("invalid move, please pick another area");
+                }while(!valid);
+                    valid = false;
+
+                display();
+                if (isWin(player)) {
+                    System.out.println(player + " wins!\n");
+                    break;
+                }
+                player = playerSwap(player);
+                tie=isTie(moveCnt);
+                if(tie){
+                    System.out.println("It's a tie!");
+                    break;
+                }
+            }while(!tie);
+
+            System.out.println();
             done=SafeInput.getYNConfirm(in,"Do you want to play again? (Y/N)");
         }while(done);
     }
@@ -59,9 +75,9 @@ public class TicTacToe
     {
         for(int row=0;row<ROWS;row++)
         {
-            for (int col=0; col<COLS;col++)
-            {
-                System.out.print(board[row][col] + " | ");
+            for (int col=0; col<COLS;col++) {
+                System.out.print(" | ");
+                System.out.print(board[row][col] + " |");
             }
             System.out.println();
         }
@@ -123,6 +139,7 @@ public class TicTacToe
     private static boolean isTie(int moveCnt) // checks for a tie condition: all spaces on the board are filled OR there is an X and an O in every win vector
     {
         if(moveCnt==9){return true;}
+
         return false;
     }
 
